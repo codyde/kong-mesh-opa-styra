@@ -10,7 +10,7 @@ The webinar details can be found here - https://konghq.com/webinars/kong-mesh-op
 
 ## Repeatable Flow 
 
-This assumes you have installed the Helm repository for Kong Mesh as well as have the Kmactl binaries installed locally on your system. This repo also contains a basic Insomnia collection for the demo application that you can use to replicate the API calls against the application if you wish.
+This assumes you have installed the Helm repository for Kong Mesh as well as have the kumactl binaries installed locally on your system. This repo also contains a basic Insomnia collection for the demo application that you can use to replicate the API calls against the application if you wish.
 
 Insomnia Note: If you choose to use Insomnia to create API calls, ensure you have created an `Environment` with the necessary configurations. A sample of this from my environment is below. 
 
