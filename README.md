@@ -26,6 +26,10 @@ Insomnia Note: If you choose to use Insomnia to create API calls, ensure you hav
 ```bash
 kubectl create ns kong-mesh-system
 ```
+* Install Kong Mesh (OPA integration is a Kong Mesh feature) 
+```bash 
+helm upgrade -i -n kong-mesh-system kong-mesh kong-mesh/kong-mesh
+```
 * Install the Kong Ingress controller via the Kumactl command 
 ```bash
 kumactl install gateway kong | kubectl apply -f -
