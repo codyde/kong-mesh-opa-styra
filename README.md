@@ -8,13 +8,15 @@ The webinar details can be found here - https://konghq.com/webinars/kong-mesh-op
 
 ![Kong Mesh and OPA](kong-mesh-opa.png)
 
-## NOTE
+## Repeatable Flow 
 
-The values.yaml file has been omitted as it contains the license file in this demo. You can replicate your own without a license (using the 5 Dataplane demo) using the following code...
+This assumes you have installed the Helm repository for Kong Mesh as well as have the Kmactl binaries installed locally on your system. This repo also contains a basic Insomnia collection for the demo application that you can use to replicate the API calls against the application if you wish. 
 
-```yaml
-kuma:
-    controlPlane:
-      envVars:
-        KUMA_RUNTIME_KUBERNETES_INJECTOR_BUILTIN_DNS_ENABLED: "true"
-```
+* Clone down this repository locally 
+* Create the Kong Mesh namespace in your Kubernetes cluster `kubectl create ns kong-mesh-system`
+* Install the Kong Ingress controller via the Kumactl command `kumactl install gateway kong | kubectl apply -f -`
+* Deploy the application manifest (1-single-site.yaml) with `kubectl apply -f 1-single-site.yaml`. This deploys the app and configures the Kong ingress controller for connectivity to the app. Depending on your cloud vendor - the connectivity to the service may take a few moments to register with DNS and connect successfully
+* Observe application functioning normally by connecting to the KIC service - `kubectl get svc -n kuma-gateway` 
+* Apply the OPA policy manifest with the allow statements commented out - `kubectl apply -f 2-opa-auth-kube.yaml`
+* Observe the application is now failing connectivity between all tiers. This is because of the default deny for all application traffic. 
+* Progressively step through enabling aspects of the traffic based on what you would like to display and reapply the manifest. There is a sample flow kept within the 2-opa-kube-auth.yaml file that you can follow to progressively enable aspects of the application. 

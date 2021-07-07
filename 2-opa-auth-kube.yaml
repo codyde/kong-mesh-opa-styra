@@ -1,0 +1,60 @@
+apiVersion: kuma.io/v1alpha1
+kind: OPAPolicy
+mesh: default
+metadata:
+  name: opa-1
+spec:
+  selectors:
+  - match:
+      kuma.io/service: '*'
+  conf:
+    agentConfig: # optional
+      inlineString: | # one of: inlineString, secret
+        decision_logs:
+          console: true
+    policies: # optional
+      - inlineString: | # one of: inlineString, secret
+          package envoy.authz
+          import input.attributes.request.http as http_request
+          default allow = false
+          token = {"valid": valid, "payload": payload} {
+              [_, encoded] := split(http_request.headers.authorization, " ")
+              # Secret is hardcoded below - this isn't production safe but serves to show the functionality visually
+              [valid, _, payload] := io.jwt.decode_verify(encoded, {"secret": "hkBxrbZ9Td4QEwgRewV6gZSVH4q78vBia4GBYuqd09SsiMsIjH"})
+          }
+
+          # Uncomment the "allow" blocks below to enable these specific policies. Policies are iterative so you can continue to apply this file each time and it will continue to update the existing policy.
+
+          # First enable "GET" to all endpoints for basic "read" functionality 
+          
+          #allow {
+          # http_request.method == "GET"
+          #}
+          
+          # Read only takes us so far - enable the loginEndpoint so we can login as admin/admin
+
+          #allow {
+          # http_request.method == "POST"
+          # input.attributes.request.http.path = "/api/loginEndpoint"
+          #}
+
+          # We want to be able to create our own custom users. Enable posting to the /api/users endpoint so we can create users
+
+          #allow {
+          # http_request.method == "POST"
+          # input.attributes.request.http.path = "/api/users"
+          #}
+
+          # After we create a new user at the /api/users endpoint, lets allow one of those users to POST across our application. Make sure to change the user_id below
+
+          #allow { 
+          # http_request.method == "POST"
+          # token.payload.user_id == "cody"
+          #}
+          
+          # Enable DELETES from teams whos JWT token contains a team of "admin" back from the API. 
+
+          #allow {
+          # http_request.method == "DELETE"
+          # token.payload.team == "admin"
+          #}
